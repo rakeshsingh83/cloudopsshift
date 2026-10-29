@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CloudOps Shift Board — Setup Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;color:#1a1a1a;background:#f7f7f5;line-height:1.6}
+.hero{background:linear-gradient(135deg,#1f4e79 0%,#2a78d6 100%);color:#fff;padding:48px 40px 40px;text-align:center}
+.hero h1{font-size:28px;font-weight:700;margin-bottom:8px}
+.hero p{font-size:15px;opacity:.85;max-width:600px;margin:0 auto}
+.container{max-width:860px;margin:0 auto;padding:40px 24px}
+.phase{background:#fff;border-radius:12px;border:1px solid #e0dfd8;margin-bottom:28px;overflow:hidden}
+.phase-header{padding:16px 22px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e0dfd8}
+.phase-num{width:32px;height:32px;border-radius:50%;background:#2a78d6;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.phase-title{font-size:16px;font-weight:700;color:#0b0b0b}
+.phase-sub{font-size:12px;color:#898781;margin-top:2px}
+.phase-body{padding:20px 22px}
+.step{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px}
+.step:last-child{margin-bottom:0}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:#e6f1fb;color:#185fa5;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-body h4{font-size:13px;font-weight:600;color:#0b0b0b;margin-bottom:4px}
+.step-body p{font-size:12px;color:#52514e;line-height:1.6}
+.step-body .note{background:#faeeda;border-left:3px solid #ef9f27;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#854f0b;margin-top:7px;line-height:1.5}
+.step-body .tip{background:#e6f1fb;border-left:3px solid #2a78d6;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#185fa5;margin-top:7px;line-height:1.5}
+.step-body .success{background:#eaf3de;border-left:3px solid #5a9e2f;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#3b6d11;margin-top:7px;line-height:1.5}
+code{background:#f0efec;border:1px solid #e0dfd8;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:#2a78d6;word-break:break-all}
+pre{background:#f0efec;border:1px solid #e0dfd8;border-radius:8px;padding:12px 14px;font-family:monospace;font-size:11px;color:#0b0b0b;overflow-x:auto;margin-top:8px;line-height:1.7;white-space:pre-wrap;word-break:break-all}
+.table-wrap{overflow-x:auto;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f0efec;padding:8px 10px;text-align:left;font-size:11px;font-weight:600;color:#52514e;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e0dfd8}
+td{padding:7px 10px;border-bottom:1px solid #e0dfd8;color:#1a1a1a;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.b-req{background:#fcebeb;color:#a32d2d}
+.b-opt{background:#eaf3de;color:#3b6d11}
+.b-m365{background:#e6f1fb;color:#185fa5}
+.divider{border:none;border-top:1px solid #e0dfd8;margin:16px 0}
+.img-placeholder{background:#f0efec;border:2px dashed #d0cfc8;border-radius:8px;padding:20px;text-align:center;font-size:12px;color:#898781;margin-top:8px}
+.checklist{list-style:none;padding:0}
+.checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0efec;font-size:12px;color:#52514e}
+.checklist li:last-child{border-bottom:none}
+.check{width:18px;height:18px;border-radius:4px;background:#eaf3de;color:#3b6d11;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.files-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.file-card{background:#f7f7f5;border:1px solid #e0dfd8;border-radius:8px;padding:12px 14px}
+.file-card .name{font-size:13px;font-weight:600;color:#0b0b0b;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.file-card .desc{font-size:11px;color:#52514e;line-height:1.5}
+.file-icon{font-size:18px}
+.footer{text-align:center;padding:32px 24px;font-size:11px;color:#898781}
+h2{font-size:15px;font-weight:700;color:#0b0b0b;margin-bottom:12px}
+@media print{body{background:#fff}.phase{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>☁️ CloudOps Shift Board</h1>
+  <p>Complete setup guide — connecting your HTML dashboard to SharePoint Excel via Power Automate</p>
+</div>
+
+<div class="container">
+
+<!-- WHAT'S IN THE PACKAGE -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">📦</div>
+    <div>
+      <div class="phase-title">What's in this package</div>
+      <div class="phase-sub">Four files — everything you need</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="name"><span class="file-icon">🖥️</span> CloudOps_Shift_Board.html</div>
+        <div class="desc">The main dashboard. Open this in any browser. Contains all sections: Zendesk, Jira, Limited Access, Provisioning, Information, Project Devices, Remote Hands, Handover.</div>
+      </div>
+      <div class="file-card">
+        <div class="name"><span class="file-icon">📊</span> CloudOps_Shift_Board.xlsx</div>
+        <div class="desc">Pre-built Excel file with 8 correctly named sheets and formatted tables. Upload this to SharePoint and use it as your shared data source.</div>
+      </div>
+      <div class="file-card">
+        <div class="name"><span class="file-icon">⚡</span> PowerAutomate_READ.json</div>
+        <div class="desc">Importable Power Automate flow template. This is the READ flow — it fetches your Excel data and returns it to the dashboard on every open.</div>
+      </div>
+      <div class="file-card">
+        <div class="name"><span class="file-icon">📄</span> SETUP_GUIDE.html</div>
+        <div class="desc">This document. Includes every step, screenshot placeholders, the exact expressions to use in Power Automate, and a troubleshooting section.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 1: EXCEL -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">1</div>
+    <div>
+      <div class="phase-title">Upload the Excel file to SharePoint</div>
+      <div class="phase-sub">~3 minutes · done once by the team owner</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Open your SharePoint document library</h4>
+        <p>Go to <code>devopsai-my.sharepoint.com</code> and navigate to the document library where your team stores shared files (e.g. <em>Shared Documents</em>).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>Upload CloudOps_Shift_Board.xlsx</h4>
+        <p>Click <strong>Upload → Files</strong> and select the Excel file from this package. Wait for it to finish uploading.</p>
+        <div class="note">⚠️ Do not rename the file after uploading — the Power Automate flow will reference it by name.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Verify the sheet names are correct</h4>
+        <p>Open the uploaded file in Excel Online. You should see 8 tabs at the bottom:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tab name</th><th>Contents</th><th>Table name inside</th></tr></thead>
+            <tbody>
+              <tr><td><code>ZD_Tickets</code></td><td>Zendesk tickets</td><td><code>tbl_ZD</code></td></tr>
+              <tr><td><code>Jira</code></td><td>Jira tickets</td><td><code>tbl_Jira</code></td></tr>
+              <tr><td><code>Limited</code></td><td>Limited access</td><td><code>tbl_Limited</code></td></tr>
+              <tr><td><code>Provisioning</code></td><td>Provisioning profiles</td><td><code>tbl_Provisioning</code></td></tr>
+              <tr><td><code>Information</code></td><td>Ongoing tasks</td><td><code>tbl_Information</code></td></tr>
+              <tr><td><code>Project</code></td><td>Project devices</td><td><code>tbl_Project</code></td></tr>
+              <tr><td><code>RemoteHands</code></td><td>Remote hands tickets</td><td><code>tbl_RemoteHands</code></td></tr>
+              <tr><td><code>Handover</code></td><td>Shift handover notes</td><td><code>tbl_Handover</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="success">✓ The provided Excel file already has all tabs and tables pre-configured. You don't need to create anything manually.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <h4>Note the file location</h4>
+        <p>In SharePoint, click the file → <strong>Details pane (ⓘ)</strong> → note down:<br>
+        • <strong>Site name</strong> — e.g. <code>experitest</code><br>
+        • <strong>Document library</strong> — e.g. <code>Shared Documents</code><br>
+        You'll need this when setting up Power Automate.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2: POWER AUTOMATE READ -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">2</div>
+    <div>
+      <div class="phase-title">Create the READ flow in Power Automate</div>
+      <div class="phase-sub">~8 minutes · done once · no admin access needed</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Open Power Automate</h4>
+        <p>Go to <strong>make.powerautomate.com</strong> in your browser. Sign in with your work Microsoft 365 account (the same account that has access to the SharePoint file).</p>
+        <div class="tip">💡 Power Automate is included in Microsoft 365 Business Basic, Standard, and Premium — no extra licence needed.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>Create a new Instant cloud flow</h4>
+        <p>Click <strong>+ Create</strong> in the left sidebar → <strong>Instant cloud flow</strong>. Name it <code>CloudOps READ</code>. Under "Choose how to trigger this flow", scroll down and select <strong>Manually trigger a flow</strong> for now (you'll change it to HTTP in a moment). Click <strong>Create</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Change the trigger to HTTP Request</h4>
+        <p>On the trigger card, click the three dots <strong>⋯</strong> → <strong>Delete</strong>. Then click <strong>+ Add a trigger</strong>, search for <strong>When an HTTP request is received</strong> and select it.</p>
+        <p style="margin-top:6px">On the trigger card:</p>
+        <ul style="padding-left:16px;font-size:12px;color:#52514e;margin-top:4px;line-height:2">
+          <li>Set <strong>Method</strong> to <code>GET</code></li>
+          <li>Set <strong>Who can trigger the flow?</strong> to <code>Anyone</code></li>
+        </ul>
+        <div class="note">⚠️ The HTTP POST URL only appears after you <strong>Save</strong> the flow for the first time. Save now and come back to copy it in step 11.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <h4>Add 8 "List rows" actions — one per Excel table</h4>
+        <p>Click <strong>+ New step</strong>. Search <strong>Excel Online (Business)</strong> → select <strong>List rows present in a table</strong>.</p>
+        <p style="margin-top:6px">Fill in the first action:</p>
+        <ul style="padding-left:16px;font-size:12px;color:#52514e;margin-top:4px;line-height:2">
+          <li><strong>Location:</strong> select your SharePoint site from the dropdown</li>
+          <li><strong>Document Library:</strong> select the library where you uploaded the Excel</li>
+          <li><strong>File:</strong> click the folder icon and pick <code>CloudOps_Shift_Board.xlsx</code></li>
+          <li><strong>Table:</strong> select <code>tbl_ZD</code></li>
+        </ul>
+        <p style="margin-top:8px">Click the three dots <strong>⋯</strong> on this action → <strong>Rename</strong> → type <code>Get_ZD</code>.</p>
+        <div class="note">Repeat this step 7 more times for each table, renaming each one as shown below:</div>
+        <div class="table-wrap" style="margin-top:8px">
+          <table>
+            <thead><tr><th>Table name</th><th>Rename action to</th></tr></thead>
+            <tbody>
+              <tr><td><code>tbl_ZD</code></td><td><code>Get_ZD</code></td></tr>
+              <tr><td><code>tbl_Jira</code></td><td><code>Get_Jira</code></td></tr>
+              <tr><td><code>tbl_Limited</code></td><td><code>Get_Limited</code></td></tr>
+              <tr><td><code>tbl_Provisioning</code></td><td><code>Get_Prov</code></td></tr>
+              <tr><td><code>tbl_Information</code></td><td><code>Get_Info</code></td></tr>
+              <tr><td><code>tbl_Project</code></td><td><code>Get_Project</code></td></tr>
+              <tr><td><code>tbl_RemoteHands</code></td><td><code>Get_RH</code></td></tr>
+              <tr><td><code>tbl_Handover</code></td><td><code>Get_Handover</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">5</div>
+      <div class="step-body">
+        <h4>Add the Response action</h4>
+        <p>Click <strong>+ New step</strong>. Search <strong>Request</strong> → select <strong>Response</strong> (from the Request connector).</p>
+        <p style="margin-top:6px">Configure it:</p>
+        <ul style="padding-left:16px;font-size:12px;color:#52514e;margin-top:4px;line-height:2">
+          <li><strong>Status Code:</strong> <code>200</code></li>
+          <li><strong>Headers:</strong> click <em>Add new item</em> twice and add:<br>
+            &nbsp;&nbsp;Key <code>Content-Type</code> → Value <code>application/json</code><br>
+            &nbsp;&nbsp;Key <code>Access-Control-Allow-Origin</code> → Value <code>*</code>
+          </li>
+          <li><strong>Body:</strong> click in the field → switch to <strong>Expression</strong> tab → paste the expression below → click OK</li>
+        </ul>
+        <pre>json(createObject(
+  'zd',       body('Get_ZD')?['value'],
+  'jira',     body('Get_Jira')?['value'],
+  'limited',  body('Get_Limited')?['value'],
+  'prov',     body('Get_Prov')?['value'],
+  'info',     body('Get_Info')?['value'],
+  'project',  body('Get_Project')?['value'],
+  'rh',       body('Get_RH')?['value'],
+  'handover', body('Get_Handover')?['value']
+))</pre>
+        <div class="tip">💡 Type this exactly as shown. The single quotes around the key names and around action names are important. If any action name differs, update it to match.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">6</div>
+      <div class="step-body">
+        <h4>Save and copy the HTTP URL</h4>
+        <p>Click <strong>Save</strong> (top right). Once saved, click on the <strong>trigger card</strong> ("When an HTTP request is received") to expand it. You'll see the <strong>HTTP POST URL</strong> — it looks like:</p>
+        <pre>https://prod-xx.westeurope.logic.azure.com:443/workflows/abc123.../triggers/manual/paths/invoke?api-version=2016-06-01&amp;sp=/triggers/manual/run&amp;sv=1.0&amp;sig=XXX</pre>
+        <p style="margin-top:6px">Click the <strong>copy icon</strong> next to the URL. Save it somewhere — you'll paste it into the dashboard next.</p>
+        <div class="success">✓ Your READ flow is ready. Test it by pasting the URL into a browser tab — you should see a JSON response with your Excel data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 3: WRITE FLOW (optional) -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">3</div>
+    <div>
+      <div class="phase-title">Create the WRITE flow in Power Automate <span class="badge b-opt">Optional</span></div>
+      <div class="phase-sub">~10 minutes · enables saving changes back to Excel automatically</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Create another Instant cloud flow</h4>
+        <p>Same as before — <strong>+ Create → Instant cloud flow</strong>. Name it <code>CloudOps WRITE</code>. Use the HTTP trigger, Method = <strong>POST</strong>, Who can trigger = <strong>Anyone</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>Set the Request Body JSON Schema</h4>
+        <p>On the trigger, click <strong>"Use sample payload to generate schema"</strong>. Paste this sample and click Done:</p>
+        <pre>{"section":"zd","rows":[{"TicketID":"242800","Organization":"BNPP","Subject":"Test ticket","Status":"In progress","Notes":"Test"}]}</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Add a Switch action</h4>
+        <p>Click <strong>+ New step → Control → Switch</strong>. In the "On" field, click in the box → Dynamic content → select <code>section</code> (from the trigger body).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <h4>Add cases for each section</h4>
+        <p>Click <strong>Add Case</strong> for each of these values: <code>zd</code>, <code>jira</code>, <code>limited</code>, <code>prov</code>, <code>info</code>, <code>project</code>, <code>rh</code>, <code>handover</code>.</p>
+        <p style="margin-top:6px">Inside each case, add two actions:</p>
+        <ul style="padding-left:16px;font-size:12px;color:#52514e;margin-top:4px;line-height:2">
+          <li><strong>Excel → Delete a row</strong> — pick the matching table. Key Column = first column name (e.g. <code>TicketID</code>). Key Value = <code>*</code> to clear all.</li>
+          <li><strong>Apply to each</strong> on expression <code>triggerBody()?['rows']</code> → inside, add <strong>Excel → Add a row into a table</strong> → map each column to <code>items('Apply_to_each')?['ColumnName']</code></li>
+        </ul>
+        <div class="note">⚠️ This replaces all rows in the table on each save. The dashboard sends the complete current state, not just changes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">5</div>
+      <div class="step-body">
+        <h4>Add Response action and save</h4>
+        <p>After the Switch, add <strong>Request → Response</strong>. Status 200, Header <code>Access-Control-Allow-Origin</code> = <code>*</code>, Body = <code>{"ok":true}</code>. Save and copy the HTTP POST URL.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 4: CONNECT DASHBOARD -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">4</div>
+    <div>
+      <div class="phase-title">Connect the dashboard to Power Automate</div>
+      <div class="phase-sub">~2 minutes · done once per device by each team member</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Open CloudOps_Shift_Board.html</h4>
+        <p>Double-click the HTML file to open it in your browser (Chrome or Edge recommended). You'll see a loading screen — that's expected.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>Click Setup (top right corner)</h4>
+        <p>Click the <strong>⚙ Setup</strong> button in the top-right. The setup dialog opens with three tabs: READ flow, WRITE flow, Enter URLs.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Click "Enter URLs" tab and paste the flow URLs</h4>
+        <p>Paste your <strong>READ flow HTTP POST URL</strong> into the first field. Paste your WRITE flow URL into the second (or leave it blank to use manual export only). Click <strong>Save and connect</strong>.</p>
+        <div class="success">✓ The dashboard immediately calls the READ flow and loads all your Excel data. From now on it auto-loads every time the file is opened — no more clicks needed.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <h4>Share with your team</h4>
+        <p>Send the <code>CloudOps_Shift_Board.html</code> file to each team member. They open it, click Setup once, paste the same two URLs, and they're connected. After that it's automatic for everyone.</p>
+        <div class="tip">💡 Tip: Save the READ and WRITE flow URLs in a shared Teams message or OneNote so team members can copy them easily.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 5: DAILY WORKFLOW -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">5</div>
+    <div>
+      <div class="phase-title">Daily workflow for your team</div>
+      <div class="phase-sub">What everyone does every shift</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <h2>How it works day-to-day</h2>
+    <ul class="checklist">
+      <li><span class="check">1</span> Open <code>CloudOps_Shift_Board.html</code> in your browser — data loads automatically from SharePoint</li>
+      <li><span class="check">2</span> Add new Zendesk or Jira tickets using the Add row at the bottom of each section</li>
+      <li><span class="check">3</span> Edit any cell directly by clicking on it — all cells are editable in place</li>
+      <li><span class="check">4</span> Change ticket statuses using the dropdown in the Status column</li>
+      <li><span class="check">5</span> Click <strong>Save to Excel</strong> — if WRITE flow is set up, changes save directly to SharePoint. Otherwise an Excel file downloads.</li>
+      <li><span class="check">6</span> At handover time, go to <strong>Handover notes</strong> → fill in Outgoing notes → hand over to next person</li>
+      <li><span class="check">7</span> Next shift person opens the file — previous handover appears automatically</li>
+      <li><span class="check">8</span> Dashboard always shows the latest data from SharePoint</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>Save modes explained</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Mode</th><th>When it's used</th><th>What happens</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Auto-save via WRITE flow</strong></td><td>WRITE flow URL is configured</td><td>Click "Save to Excel" → data goes directly to SharePoint Excel via Power Automate. Team sees changes instantly on next Reload.</td></tr>
+          <tr><td><strong>Manual export</strong></td><td>No WRITE flow configured</td><td>Click "Save to Excel" → Excel file downloads to your computer. Upload it to SharePoint to replace the shared file.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TROUBLESHOOTING -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">🔧</div>
+    <div>
+      <div class="phase-title">Troubleshooting</div>
+      <div class="phase-sub">Common issues and fixes</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard shows "Load failed" on open</td><td>Flow URL not entered yet</td><td>Click Setup → Enter URLs → paste READ flow URL → Save</td></tr>
+          <tr><td>Flow returns 404 or error</td><td>Wrong URL pasted</td><td>Open Power Automate → find CloudOps READ → click the trigger card → re-copy the URL</td></tr>
+          <tr><td>Data loads but some sections are empty</td><td>Sheet or table name mismatch</td><td>Open Excel → check tab names match exactly: ZD_Tickets, Jira, Limited, Provisioning, Information, Project, RemoteHands, Handover</td></tr>
+          <tr><td>Flow runs but Response body is empty</td><td>Action rename mismatch in expression</td><td>In the Response body expression, check the action names match exactly what you renamed them to (Get_ZD, Get_Jira etc.)</td></tr>
+          <tr><td>"Access-Control-Allow-Origin" error in console</td><td>Missing CORS header in Response action</td><td>Edit the Response action → add header: <code>Access-Control-Allow-Origin</code> = <code>*</code></td></tr>
+          <tr><td>Save to Excel downloads a file instead of saving to SharePoint</td><td>WRITE flow URL not entered</td><td>Create the WRITE flow (Phase 3) → click Setup → paste URL into second field</td></tr>
+          <tr><td>Flow URL stopped working</td><td>Microsoft URL migration (post Nov 2025)</td><td>Open the flow → re-save it → new URL is generated → update in dashboard Setup</td></tr>
+          <tr><td>Team member can't load data</td><td>They haven't entered the flow URL yet</td><td>Share the flow URL with them → they open Setup → paste URL → Save</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK REFERENCE -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">📋</div>
+    <div>
+      <div class="phase-title">Quick reference — Excel table names</div>
+      <div class="phase-sub">Copy these exact names when setting up Power Automate actions</div>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dashboard section</th><th>Excel sheet name</th><th>Excel table name</th><th>PA action rename</th><th>PA response key</th></tr></thead>
+        <tbody>
+          <tr><td>Zendesk tickets</td><td><code>ZD_Tickets</code></td><td><code>tbl_ZD</code></td><td><code>Get_ZD</code></td><td><code>zd</code></td></tr>
+          <tr><td>Jira tickets</td><td><code>Jira</code></td><td><code>tbl_Jira</code></td><td><code>Get_Jira</code></td><td><code>jira</code></td></tr>
+          <tr><td>Limited access</td><td><code>Limited</code></td><td><code>tbl_Limited</code></td><td><code>Get_Limited</code></td><td><code>limited</code></td></tr>
+          <tr><td>Provisioning</td><td><code>Provisioning</code></td><td><code>tbl_Provisioning</code></td><td><code>Get_Prov</code></td><td><code>prov</code></td></tr>
+          <tr><td>Information</td><td><code>Information</code></td><td><code>tbl_Information</code></td><td><code>Get_Info</code></td><td><code>info</code></td></tr>
+          <tr><td>Project devices</td><td><code>Project</code></td><td><code>tbl_Project</code></td><td><code>Get_Project</code></td><td><code>project</code></td></tr>
+          <tr><td>Remote hands</td><td><code>RemoteHands</code></td><td><code>tbl_RemoteHands</code></td><td><code>Get_RH</code></td><td><code>rh</code></td></tr>
+          <tr><td>Handover notes</td><td><code>Handover</code></td><td><code>tbl_Handover</code></td><td><code>Get_Handover</code></td><td><code>handover</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="footer">CloudOps Shift Board · Built for DevOps team shift management · Powered by Power Automate + SharePoint</div>
+</body>
+</html>

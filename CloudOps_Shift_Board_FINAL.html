@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CloudOps Shift Board</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --s0:#f5f5f3;--s1:#f0efec;--s2:#fff;--tp:#0b0b0b;--ts:#52514e;--tm:#898781;
+  --bd:rgba(11,11,11,.12);--bds:rgba(11,11,11,.22);
+  --bga:#e6f1fb;--ta:#185fa5;--bda:#85b7eb;
+  --bgs:#eaf3de;--tsu:#3b6d11;--bgw:#faeeda;--tw:#854f0b;--bdw:#ef9f27;
+  --bgd:#fcebeb;--td:#a32d2d;--bdd:#f09595;--fa:#2a78d6;--oa:#fff;--r:7px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --s0:#111110;--s1:#1a1a19;--s2:#232321;--tp:#fff;--ts:#c3c2b7;--tm:#898781;
+  --bd:rgba(255,255,255,.10);--bds:rgba(255,255,255,.20);
+  --bga:#0c2e52;--ta:#3987e5;--bda:#185fa5;--bgs:#173404;--tsu:#97c459;
+  --bgw:#412402;--tw:#ef9f27;--bdw:#854f0b;--bgd:#501313;--td:#f09595;--bdd:#a32d2d;--fa:#3987e5;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:12px;color:var(--tp);background:var(--s0);display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:42px;background:var(--s2);border-bottom:1px solid var(--bd);flex-shrink:0;gap:8px}
+.logo{font-size:13px;font-weight:700;white-space:nowrap}
+.tmid{display:flex;align-items:center;gap:8px;flex:1;justify-content:center}
+.tright{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:var(--r);border:1px solid var(--bds);background:var(--s2);color:var(--tp);cursor:pointer;font-size:11px;font-family:inherit;white-space:nowrap;line-height:1.2}
+.btn:hover{background:var(--s1)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-green{background:#1baf7a;color:#fff;border-color:transparent}.btn-green:hover:not(:disabled){background:#159e6c}
+.btn-blue{background:var(--fa);color:#fff;border-color:transparent}.btn-blue:hover:not(:disabled){opacity:.88}
+.dlbl{font-size:11px;color:var(--tm);white-space:nowrap}
+.sbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;background:var(--s1);color:var(--tm);border:1px solid var(--bd);white-space:nowrap}
+.sbadge.ok{background:var(--bgs);color:var(--tsu);border-color:#c0dd97}
+.sbadge.busy{background:var(--bgw);color:var(--tw);border-color:var(--bdw)}
+.sbadge.err{background:var(--bgd);color:var(--td);border-color:var(--bdd)}
+.sdot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite}
+.workspace{display:flex;flex:1;overflow:hidden}
+.sidebar{width:158px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);padding:8px 6px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.nsec{font-size:10px;font-weight:700;color:var(--tm);padding:8px 8px 3px;letter-spacing:.06em;text-transform:uppercase}
+.nitem{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--r);cursor:pointer;font-size:11px;color:var(--ts);border:none;background:none;width:100%;text-align:left;transition:background .1s}
+.nitem:hover{background:var(--s2);color:var(--tp)}
+.nitem.active{background:var(--bga);color:var(--ta)}
+.nitem i{font-size:14px;flex-shrink:0}
+.ncnt{margin-left:auto;font-size:10px;border-radius:20px;padding:1px 5px;background:var(--s0);color:var(--tm);min-width:18px;text-align:center}
+.nitem.active .ncnt{background:var(--bda);color:var(--ta)}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.view{display:none;flex:1;flex-direction:column}.view.active{display:flex}
+.vbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;background:var(--s2);border-bottom:1px solid var(--bd);flex-shrink:0}
+.vtitle{font-size:12px;font-weight:600;flex:none;margin-right:4px}
+.srch{padding:3px 8px;border-radius:var(--r);border:1px solid var(--bds);background:var(--s1);color:var(--tp);font-size:11px;font-family:inherit;width:170px}
+.srch::placeholder{color:var(--tm)}
+.fsel{padding:3px 7px;border-radius:var(--r);border:1px solid var(--bds);background:var(--s1);color:var(--tp);font-size:11px;font-family:inherit;cursor:pointer}
+.tscroll{flex:1;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;z-index:2}
+th{font-size:10px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;text-align:left;background:var(--s1);border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:5px 10px;font-size:11.5px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s1)}
+[contenteditable]{outline:none;border-radius:3px;cursor:text}
+[contenteditable]:focus{background:var(--bga)}
+.tl{color:var(--ta);text-decoration:none;font-size:11px}.tl:hover{text-decoration:underline}
+.col-id{width:76px;white-space:nowrap}.col-org{width:148px}.col-sub{min-width:180px}
+td.col-sub{word-break:break-word;white-space:normal}
+.col-st{width:108px;white-space:nowrap}.col-no{width:122px}.col-n{width:30px}.col-cl{width:95px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-done{background:#eaf3de;color:#3b6d11}.b-prog{background:#e6f1fb;color:#185fa5}
+.b-hold{background:#faeeda;color:#854f0b}.b-need{background:#fce4d6;color:#843c0c}
+.b-mon{background:#eeedfe;color:#534ab7}.b-not{background:var(--s1);color:var(--ts);border:1px solid var(--bd)}
+.b-res{background:#eaf3de;color:#3b6d11}
+.rca{background:#fcebeb;color:#a32d2d;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600}
+.ssel{padding:2px 5px;border-radius:20px;border:1px solid var(--bds);background:var(--s2);color:var(--tp);font-size:10px;font-family:inherit;cursor:pointer}
+.arow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 10px;border-top:1px solid var(--bd);background:var(--s1);flex-shrink:0}
+.ainp{flex:1;padding:4px 8px;border-radius:var(--r);border:1px solid var(--bds);background:var(--s2);color:var(--tp);font-size:11px;font-family:inherit;min-width:80px}
+.ainp::placeholder{color:var(--tm)}
+.wbanner{background:var(--bgw);border:1px solid var(--bdw);border-radius:var(--r);padding:7px 10px;margin:8px 12px;font-size:11px;color:var(--tw);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.dbanner{background:var(--bgd);border:1px solid var(--bdd);border-radius:var(--r);padding:8px 12px;margin:8px 12px;font-size:11px;color:var(--td);display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.subhead{padding:6px 10px;background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.04em}
+.dbody{padding:12px;overflow-y:auto;flex:1}
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--s1);border-radius:var(--r);padding:10px 12px;cursor:pointer;border:1px solid transparent;transition:border-color .12s}
+.kpi:hover{border-color:var(--bds)}
+.klbl{font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.kval{font-size:24px;font-weight:700;line-height:1}.ksub{font-size:10px;color:var(--tm);margin-top:3px}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.cc{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.ct{font-size:11px;font-weight:600;margin-bottom:8px}
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:7px}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ts)}
+.lsq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.ac{background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.ah{font-size:10px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hobody{padding:12px;overflow-y:auto;flex:1}
+.g2ho{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.sct{font-size:11px;font-weight:600;color:var(--tm);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.sc textarea{width:100%;border:1px solid var(--bds);border-radius:var(--r);background:var(--s1);color:var(--tp);font-size:11px;font-family:inherit;padding:7px 8px;resize:vertical;min-height:80px;line-height:1.5}
+.pho{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
+.phot{font-size:11px;font-weight:600;margin-bottom:3px}
+.phom{font-size:10px;color:var(--tm);margin-bottom:8px}
+.phob{font-size:11px;color:var(--ts);line-height:1.6;white-space:pre-line}
+/* LOADING */
+.load-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:32px;text-align:center;background:var(--s0)}
+.load-icon{font-size:44px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.pulsing{animation:pulse 1.3s ease-in-out infinite}
+.load-title{font-size:15px;font-weight:700}
+.load-sub{font-size:12px;color:var(--tm);max-width:420px;line-height:1.7}
+.prog-bar{width:260px;height:5px;background:var(--s1);border-radius:20px;overflow:hidden}
+.prog-fill{height:100%;background:var(--fa);border-radius:20px;width:0;transition:width .35s ease}
+/* MODAL */
+.mbdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center}
+.mbdrop.open{display:flex}
+.modal{background:var(--s2);border-radius:12px;border:1px solid var(--bd);padding:20px 22px;width:560px;max-width:96vw;max-height:90vh;overflow-y:auto}
+.mtitle{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.msub{font-size:11px;color:var(--tm);margin-bottom:14px;line-height:1.6}
+.tabrow{display:flex;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.tab{padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--tm);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--ta);border-bottom-color:var(--fa)}
+.tp{display:none}.tp.active{display:block}
+.fl{margin-bottom:12px}
+.fl label{font-size:11px;font-weight:600;color:var(--ts);margin-bottom:4px;display:block}
+.fi{width:100%;padding:7px 10px;border-radius:var(--r);border:1px solid var(--bds);background:var(--s1);color:var(--tp);font-size:12px;font-family:inherit}
+.fi::placeholder{color:var(--tm)}
+.fhint{font-size:10px;color:var(--tm);margin-top:4px;line-height:1.5}
+.info-box{background:var(--bga);border:1px solid var(--bda);border-radius:var(--r);padding:10px 12px;font-size:11px;color:var(--ta);line-height:1.7;margin-bottom:12px}
+.warn-box{background:var(--bgw);border:1px solid var(--bdw);border-radius:var(--r);padding:10px 12px;font-size:11px;color:var(--tw);line-height:1.7;margin-bottom:12px}
+.steps{list-style:none;padding:0}
+.steps li{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:11px;color:var(--ts);line-height:1.5}
+.steps li:last-child{border-bottom:none}
+.sn{min-width:22px;height:22px;border-radius:50%;background:var(--fa);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.steps code{background:var(--s1);border:1px solid var(--bd);border-radius:4px;padding:1px 5px;font-family:monospace;font-size:10px;color:var(--ta);word-break:break-all}
+.mft{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.divider{border:none;border-top:1px solid var(--bd);margin:12px 0}
+.toast{position:fixed;bottom:16px;right:16px;z-index:9999;padding:9px 14px;border-radius:var(--r);font-size:11px;font-weight:500;background:var(--s2);border:1px solid var(--bd);color:var(--tp);transition:opacity .3s;opacity:0;pointer-events:none;max-width:340px;line-height:1.5}
+.toast.show{opacity:1}
+.toast.ok{background:var(--bgs);color:var(--tsu);border-color:#c0dd97}
+.toast.err{background:var(--bgd);color:var(--td);border-color:var(--bdd)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">CloudOps Shift Board</span>
+  <div class="tmid">
+    <span class="dlbl" id="dateLbl"></span>
+    <span class="sbadge" id="sbadge"><span class="sdot spin"></span><span id="stxt">Loading…</span></span>
+  </div>
+  <div class="tright">
+    <input type="file" id="fileInp" accept=".xlsx,.xls" style="display:none" onchange="importFile(event)">
+    <button class="btn" id="btnReload" onclick="autoLoad()" disabled><i class="ti ti-refresh" style="font-size:13px"></i> Reload</button>
+    <button class="btn btn-green" id="btnSave" onclick="exportExcel()" disabled><i class="ti ti-file-export" style="font-size:13px"></i> Save to Excel</button>
+    <button class="btn" onclick="openModal()"><i class="ti ti-settings" style="font-size:13px"></i> Setup</button>
+  </div>
+</div>
+
+<div class="workspace">
+<nav class="sidebar">
+  <div class="nsec">Overview</div>
+  <button class="nitem active" onclick="sw('dashboard',this)"><i class="ti ti-home"></i> Dashboard</button>
+  <div class="nsec">Tickets</div>
+  <button class="nitem" onclick="sw('zendesk',this)"><i class="ti ti-ticket"></i> Zendesk <span class="ncnt" id="nc-zd">0</span></button>
+  <button class="nitem" onclick="sw('jira',this)"><i class="ti ti-brand-jira"></i> Jira <span class="ncnt" id="nc-jira">0</span></button>
+  <button class="nitem" onclick="sw('limited',this)"><i class="ti ti-lock"></i> Limited access <span class="ncnt" id="nc-ltd">0</span></button>
+  <div class="nsec">Tasks</div>
+  <button class="nitem" onclick="sw('provisioning',this)"><i class="ti ti-certificate"></i> Provisioning <span class="ncnt" id="nc-prov">0</span></button>
+  <button class="nitem" onclick="sw('info',this)"><i class="ti ti-info-circle"></i> Information <span class="ncnt" id="nc-info">0</span></button>
+  <button class="nitem" onclick="sw('project',this)"><i class="ti ti-device-mobile"></i> Project devices <span class="ncnt" id="nc-proj">0</span></button>
+  <button class="nitem" onclick="sw('remote',this)"><i class="ti ti-hand-move"></i> Remote hands <span class="ncnt" id="nc-rh">0</span></button>
+  <div class="nsec">Shift</div>
+  <button class="nitem" onclick="sw('handover',this)"><i class="ti ti-transfer"></i> Handover notes</button>
+</nav>
+
+<div class="main">
+
+<!-- LOADING -->
+<div id="view-loading" class="view active">
+  <div class="load-wrap" id="loadWrap">
+    <div class="load-icon pulsing" id="loadIcon">⚡</div>
+    <div class="load-title" id="loadTitle">Loading shift data…</div>
+    <div class="load-sub" id="loadSub">Connecting to SharePoint via Power Automate</div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view">
+  <div class="dbody">
+    <div class="krow">
+      <div class="kpi" onclick="sw('zendesk',document.querySelectorAll('.nitem')[1])"><div class="klbl">ZD tickets</div><div class="kval" style="color:#2a78d6" id="kv-zd">—</div><div class="ksub">Total today</div></div>
+      <div class="kpi" onclick="sw('zendesk',document.querySelectorAll('.nitem')[1])"><div class="klbl">In progress</div><div class="kval" style="color:#eda100" id="kv-prog">—</div><div class="ksub">Need action</div></div>
+      <div class="kpi" onclick="sw('zendesk',document.querySelectorAll('.nitem')[1])"><div class="klbl">Done</div><div class="kval" style="color:#1baf7a" id="kv-done">—</div><div class="ksub">Resolved today</div></div>
+      <div class="kpi" onclick="sw('jira',document.querySelectorAll('.nitem')[2])"><div class="klbl">Jira open</div><div class="kval" style="color:#e34948" id="kv-jira">—</div><div class="ksub">In progress</div></div>
+      <div class="kpi" onclick="sw('limited',document.querySelectorAll('.nitem')[3])"><div class="klbl">Needs RCA</div><div class="kval" style="color:#e34948" id="kv-rca">—</div><div class="ksub">Limited access</div></div>
+    </div>
+    <div class="crow">
+      <div class="cc"><div class="ct">ZD status breakdown</div><div class="legend" id="leg1"></div><div style="position:relative;height:165px"><canvas id="c1"></canvas></div></div>
+      <div class="cc"><div class="ct">Tickets by organisation (top 8)</div><div style="position:relative;height:215px"><canvas id="c2"></canvas></div></div>
+    </div>
+    <div class="ac">
+      <div class="ah"><i class="ti ti-alert-circle" style="font-size:13px"></i> Items needing attention</div>
+      <table><thead><tr><th class="col-id">Source</th><th class="col-cl">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Action</th></tr></thead>
+      <tbody id="attn-body"><tr><td colspan="5" style="text-align:center;padding:16px;color:var(--tm)">Loading…</td></tr></tbody></table>
+    </div>
+    <div class="g2">
+      <div class="cc"><div class="ct">Jira by cloud</div><div style="position:relative;height:190px"><canvas id="c3"></canvas></div></div>
+      <div class="cc" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+        <div class="ct" style="align-self:flex-start;width:100%">Provisioning profiles</div>
+        <div style="position:relative;height:120px;width:120px"><canvas id="c4"></canvas></div>
+        <div style="font-size:26px;font-weight:700;color:#2a78d6" id="kv-prov">—</div>
+        <div style="font-size:10px;color:var(--tm)">all in progress</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZENDESK -->
+<div id="view-zendesk" class="view">
+  <div class="vbar"><span class="vtitle"><i class="ti ti-ticket" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Zendesk tickets</span>
+    <input class="srch" placeholder="Search…" oninput="filt(this,'t-zd')">
+    <select class="fsel" onchange="filtSt(this,'t-zd')"><option value="">All statuses</option><option>In progress</option><option>Done</option><option>On hold</option><option>Notice</option><option>Need to do</option></select>
+  </div>
+  <div class="tscroll"><table id="t-zd"><thead><tr><th class="col-id">ID</th><th class="col-org">Organisation</th><th class="col-sub">Subject</th><th class="col-st">Status</th><th class="col-no">Notes</th></tr></thead><tbody id="zd-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-zn" placeholder="Ticket # or URL…" style="max-width:130px"><input class="ainp" id="ai-zc" placeholder="Organisation…" style="max-width:140px"><input class="ainp" id="ai-zs" placeholder="Subject…"><select class="fsel" id="ai-zst"><option>In progress</option><option>Done</option><option>On hold</option><option>Need to do</option><option>Notice</option></select><input class="ainp" id="ai-znt" placeholder="Notes…" style="max-width:110px"><button class="btn btn-blue" onclick="addZD()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- JIRA -->
+<div id="view-jira" class="view">
+  <div class="wbanner"><i class="ti ti-alert-triangle" style="font-size:13px"></i> Check Jira tickets daily</div>
+  <div class="vbar"><span class="vtitle"><i class="ti ti-brand-jira" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Jira tickets</span><input class="srch" placeholder="Search…" oninput="filt(this,'t-jira')"></div>
+  <div class="tscroll"><table id="t-jira"><thead><tr><th class="col-id">Ticket</th><th class="col-cl">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Type</th></tr></thead><tbody id="jira-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-jn" placeholder="SA-XXXXX…" style="max-width:110px"><input class="ainp" id="ai-jc" placeholder="Cloud…" style="max-width:110px"><input class="ainp" id="ai-jd" placeholder="Description…"><button class="btn btn-blue" onclick="addJira()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- LIMITED -->
+<div id="view-limited" class="view">
+  <div class="vbar"><span class="vtitle"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Limited access</span></div>
+  <div class="tscroll"><table><thead><tr><th class="col-id">Ticket</th><th class="col-org">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Action</th></tr></thead><tbody id="ltd-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-ln" placeholder="Ticket # or URL…" style="max-width:130px"><input class="ainp" id="ai-lc" placeholder="Cloud…" style="max-width:120px"><input class="ainp" id="ai-ld" placeholder="Description…"><select class="fsel" id="ai-ls"><option>In progress</option><option>Resolved</option><option>Done</option></select><button class="btn btn-blue" onclick="addLtd()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- PROVISIONING -->
+<div id="view-provisioning" class="view">
+  <div class="vbar"><span class="vtitle"><i class="ti ti-certificate" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Provisioning profiles</span></div>
+  <div class="tscroll"><table><thead><tr><th class="col-id">Ticket</th><th class="col-cl">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Notes</th></tr></thead><tbody id="prov-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-pn" placeholder="Ticket # or URL…" style="max-width:130px"><input class="ainp" id="ai-pc" placeholder="Cloud…" style="max-width:110px"><input class="ainp" id="ai-pd" placeholder="Description…"><button class="btn btn-blue" onclick="addProv()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- INFORMATION -->
+<div id="view-info" class="view">
+  <div class="vbar"><span class="vtitle"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Information and ongoing tasks</span></div>
+  <div class="tscroll"><table><thead><tr><th class="col-n">#</th><th class="col-org">Cloud</th><th class="col-sub">Task</th><th class="col-st">Status</th><th class="col-no">Link</th></tr></thead><tbody id="info-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-ic" placeholder="Cloud…" style="max-width:120px"><input class="ainp" id="ai-it" placeholder="Task…"><select class="fsel" id="ai-is"><option>Need-to-do</option><option>In progress</option><option>Done</option><option>Monitor</option><option>HOLD</option></select><button class="btn btn-blue" onclick="addInfo()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- PROJECT DEVICES -->
+<div id="view-project" class="view">
+  <div class="vbar"><span class="vtitle"><i class="ti ti-device-mobile" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Project devices</span></div>
+  <div class="tscroll">
+    <table><thead><tr><th class="col-n">#</th><th class="col-org">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Link</th></tr></thead><tbody id="proj-body"></tbody></table>
+    <div class="subhead">Bloated devices – need temp provision</div>
+    <table><thead><tr><th class="col-n">#</th><th class="col-cl">Cloud</th><th class="col-sub">Device</th><th class="col-st">Status</th></tr></thead><tbody id="bloat-body"></tbody></table>
+  </div>
+  <div class="arow"><input class="ainp" id="ai-bc" placeholder="Cloud…" style="max-width:120px"><input class="ainp" id="ai-bd" placeholder="Device name…"><button class="btn btn-blue" onclick="addBloat()"><i class="ti ti-plus"></i> Add bloated device</button></div>
+</div>
+
+<!-- REMOTE HANDS -->
+<div id="view-remote" class="view">
+  <div class="dbanner"><span><i class="ti ti-alert-triangle" style="font-size:12px"></i> Cancel the ticket when not required</span><span><i class="ti ti-alert-triangle" style="font-size:12px"></i> Raise RH after William's DC visit for offline devices</span></div>
+  <div class="vbar"><span class="vtitle"><i class="ti ti-hand-move" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Remote hands</span></div>
+  <div class="tscroll"><table><thead><tr><th class="col-id">Ticket</th><th class="col-cl">Cloud</th><th class="col-sub">Description</th><th class="col-st">Status</th><th class="col-no">Notes</th></tr></thead><tbody id="rh-body"></tbody></table></div>
+  <div class="arow"><input class="ainp" id="ai-rn" placeholder="Ticket # or URL…" style="max-width:130px"><input class="ainp" id="ai-rc" placeholder="Cloud…" style="max-width:110px"><input class="ainp" id="ai-rd" placeholder="Description…"><select class="fsel" id="ai-rs"><option>In progress</option><option>Done</option><option>Cancelled</option></select><button class="btn btn-blue" onclick="addRH()"><i class="ti ti-plus"></i> Add</button></div>
+</div>
+
+<!-- HANDOVER -->
+<div id="view-handover" class="view">
+  <div class="hobody">
+    <div style="margin-bottom:12px"><span style="font-size:13px;font-weight:700">Shift handover</span></div>
+    <div class="g2ho">
+      <div class="sc"><div class="sct"><i class="ti ti-sun" style="font-size:13px"></i> Outgoing shift</div><textarea id="ho-out" placeholder="What was done, what's still open, blockers…"></textarea></div>
+      <div class="sc"><div class="sct"><i class="ti ti-moon" style="font-size:13px"></i> Incoming shift</div><textarea id="ho-in" placeholder="Acknowledge items, add new tasks…"></textarea></div>
+    </div>
+    <div class="pho"><div class="phot">Previous handover</div><div class="phom" id="phom">—</div><div class="phob" id="phob"></div></div>
+  </div>
+</div>
+
+</div><!-- /.main -->
+</div><!-- /.workspace -->
+
+<!-- SETUP MODAL -->
+<div class="mbdrop" id="setupModal">
+<div class="modal">
+  <div class="mtitle"><i class="ti ti-bolt" style="font-size:17px;color:#e06c00"></i> Setup — Power Automate connection</div>
+  <div class="msub">Connect to your SharePoint Excel using Power Automate — already included in your Microsoft 365. No extra accounts, no admin access needed. Takes about 10 minutes once.</div>
+
+  <div class="tabrow">
+    <button class="tab active" onclick="stab('t-read',this)">READ flow (load)</button>
+    <button class="tab" onclick="stab('t-write',this)">WRITE flow (save)</button>
+    <button class="tab" onclick="stab('t-urls',this)">Enter URLs</button>
+  </div>
+
+  <!-- READ FLOW INSTRUCTIONS -->
+  <div id="t-read" class="tp active">
+    <div class="info-box"><strong>This flow reads your Excel and sends all data to the dashboard.</strong> It runs under your Microsoft account using your existing SharePoint permissions — no Azure AD, no admin needed.</div>
+    <ul class="steps">
+      <li><span class="sn">1</span><div>Go to <strong>make.powerautomate.com</strong> → sign in with your work Microsoft account → click <strong>+ Create → Instant cloud flow</strong>.</div></li>
+      <li><span class="sn">2</span><div>Name it <strong>CloudOps READ</strong>. For trigger, search and select <strong>"When an HTTP request is received"</strong>. Click Create.</div></li>
+      <li><span class="sn">3</span><div>On the trigger card, set <strong>Method = GET</strong>. Under <strong>"Who can trigger the flow?"</strong> select <strong>Anyone</strong>.</div></li>
+      <li><span class="sn">4</span><div>Click <strong>+ New step</strong> → search <strong>Excel Online (Business)</strong> → select <strong>"List rows present in a table"</strong>. Set Location = your SharePoint site, Document Library = the library, File = your Excel, Table = <code>tbl_ZD</code>. Rename this step <code>Get_ZD</code>.</div></li>
+      <li><span class="sn">5</span><div>Repeat step 4 seven more times for each table: <code>tbl_Jira</code> <code>tbl_Limited</code> <code>tbl_Provisioning</code> <code>tbl_Information</code> <code>tbl_Project</code> <code>tbl_RemoteHands</code> <code>tbl_Handover</code>. Name each step accordingly.</div></li>
+      <li><span class="sn">6</span><div>Add a final step: search <strong>Response</strong> → select the <strong>Request / Response</strong> action. Set Status Code = <code>200</code>. Add header: <code>Content-Type</code> = <code>application/json</code> and <code>Access-Control-Allow-Origin</code> = <code>*</code>. In Body paste this expression (click the Expression tab in the value field):<br><code>json(createObject('zd',body('Get_ZD')?['value'],'jira',body('Get_Jira')?['value'],'limited',body('Get_Limited')?['value'],'prov',body('Get_Prov')?['value'],'info',body('Get_Info')?['value'],'project',body('Get_Project')?['value'],'rh',body('Get_RH')?['value'],'handover',body('Get_Handover')?['value']))</code></div></li>
+      <li><span class="sn">7</span><div>Click <strong>Save</strong>. The trigger card now shows the <strong>HTTP POST URL</strong> — copy it and paste in the <strong>Enter URLs</strong> tab.</div></li>
+    </ul>
+  </div>
+
+  <!-- WRITE FLOW INSTRUCTIONS -->
+  <div id="t-write" class="tp">
+    <div class="info-box"><strong>This flow receives updated data from the dashboard and writes it back to Excel.</strong> It clears and rewrites the relevant table on each save.</div>
+    <ul class="steps">
+      <li><span class="sn">1</span><div>Create another new Instant cloud flow. Name it <strong>CloudOps WRITE</strong>. Trigger: <strong>"When an HTTP request is received"</strong>, Method = <strong>POST</strong>, Who can trigger = <strong>Anyone</strong>.</div></li>
+      <li><span class="sn">2</span><div>In the trigger's <strong>Request Body JSON Schema</strong> box, click <strong>"Use sample payload"</strong> and paste: <code>{"section":"zd","rows":[{"TicketID":"1","Organization":"Test","Subject":"Test","Status":"Done","Notes":""}]}</code> then click Done.</div></li>
+      <li><span class="sn">3</span><div>Add step: <strong>Control → Switch</strong>. Switch on value: <code>triggerBody()?['section']</code>.</div></li>
+      <li><span class="sn">4</span><div>Add a case for each section name (<code>zd</code>, <code>jira</code>, <code>limited</code>, <code>prov</code>, <code>info</code>, <code>project</code>, <code>rh</code>, <code>handover</code>). Inside each case, add two actions:<br>① <strong>Excel → Delete a row</strong> — pick the matching table, Key Column = <code>TicketID</code>, Key Value = <code>*</code> (this clears all rows)<br>② <strong>Apply to each</strong> on <code>triggerBody()?['rows']</code> → inside, add <strong>Excel → Add a row into a table</strong> and map each column to the matching field.</div></li>
+      <li><span class="sn">5</span><div>Add a final <strong>Response</strong> step: Status 200, Header <code>Access-Control-Allow-Origin</code> = <code>*</code>, Body = <code>{"ok":true}</code>. Save and copy the HTTP POST URL.</div></li>
+    </ul>
+    <div class="warn-box" style="margin-top:10px"><strong>Tip:</strong> The WRITE flow is optional to start — you can use READ-only first (load data, view it, add rows manually in the dashboard, then export to Excel using the Save button). Add the WRITE flow when you're ready for full two-way sync.</div>
+  </div>
+
+  <!-- ENTER URLs -->
+  <div id="t-urls" class="tp">
+    <div class="fl">
+      <label>READ flow URL (HTTP POST URL from Power Automate)</label>
+      <input class="fi" id="cfg-read" placeholder="https://prod-xx.westeurope.logic.azure.com:443/workflows/…">
+      <div class="fhint">From your <strong>CloudOps READ</strong> flow → trigger card → HTTP POST URL. Required for auto-loading data.</div>
+    </div>
+    <div class="fl">
+      <label>WRITE flow URL (optional — for saving back to Excel)</label>
+      <input class="fi" id="cfg-write" placeholder="https://prod-xx.westeurope.logic.azure.com:443/workflows/…">
+      <div class="fhint">From your <strong>CloudOps WRITE</strong> flow. Leave blank to use manual export only.</div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:11px;color:var(--tm);line-height:1.6;margin-bottom:10px">
+      <strong style="color:var(--ts)">These URLs are saved in your browser.</strong> Each team member enters them once. After that the dashboard auto-loads every time with no prompts.<br><br>
+      <strong style="color:var(--ts)">No Worker yet?</strong> Use the manual fallback below — load your Excel file from your computer until the flow is ready.
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="btn" onclick="document.getElementById('fileInp').click();closeModal()" style="font-size:11px"><i class="ti ti-file-import" style="font-size:13px"></i> Load Excel manually (fallback)</button>
+      <span style="font-size:10px;color:var(--tm)">One-off load from downloaded file</span>
+    </div>
+  </div>
+
+  <div class="mft">
+    <button class="btn" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-blue" onclick="saveSetup()"><i class="ti ti-check"></i> Save and connect</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ══════════════════════════════════════════
+   CONFIG — localStorage, survive page reload
+══════════════════════════════════════════ */
+const K_READ  = 'co_pa_read_v4';
+const K_WRITE = 'co_pa_write_v4';
+const K_CACHE = 'co_cache_v4';
+
+let PA_READ  = localStorage.getItem(K_READ)  || '';
+let PA_WRITE = localStorage.getItem(K_WRITE) || '';
+
+const SHEETS = {
+  zendesk:'ZD_Tickets', jira:'Jira', limited:'Limited',
+  provisioning:'Provisioning', info:'Information',
+  project:'Project', remote:'RemoteHands'
+};
+const HDRS = {
+  zendesk:['TicketID','Organization','Subject','Status','Notes'],
+  jira:['TicketID','Cloud','Description','Status','Type'],
+  limited:['TicketID','Cloud','Description','Status','Action'],
+  provisioning:['TicketID','Cloud','Description','Status','Notes'],
+  info:['Num','Cloud','Task','Status','Link'],
+  project:['Num','Cloud','Description','Status','Link'],
+  remote:['TicketID','Cloud','Description','Status','Notes'],
+};
+const TBODY = {
+  zendesk:'zd-body', jira:'jira-body', limited:'ltd-body',
+  provisioning:'prov-body', info:'info-body',
+  project:'proj-body', remote:'rh-body'
+};
+const CNT = {
+  zendesk:'nc-zd', jira:'nc-jira', limited:'nc-ltd',
+  provisioning:'nc-prov', info:'nc-info',
+  project:'nc-proj', remote:'nc-rh'
+};
+// Map from dashboard section key → Power Automate response key
+const PA_KEY = {
+  zendesk:'zd', jira:'jira', limited:'limited',
+  provisioning:'prov', info:'info',
+  project:'project', remote:'rh'
+};
+
+/* ══════════════════════════════════════════
+   STARTUP
+══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dateLbl').textContent =
+    new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  autoLoad();
+});
+
+/* ══════════════════════════════════════════
+   AUTO-LOAD  — Power Automate → cache → prompt
+══════════════════════════════════════════ */
+async function autoLoad() {
+  prog(5);
+  setSB('busy','Loading from SharePoint…');
+  setLd('Loading shift data…','Connecting to SharePoint via Power Automate');
+
+  if (!PA_READ) {
+    const cached = getCache();
+    if (cached) { restoreCache(cached); setSB('ok','Loaded from cache — set up Power Automate to auto-sync'); return; }
+    showNoSetup(); return;
+  }
+
+  try {
+    prog(20);
+    const resp = await fetch(PA_READ, { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}', cache:'no-store' });
+    prog(65);
+    if (!resp.ok) throw new Error(`Flow returned ${resp.status} — check the READ flow URL`);
+    const data = await resp.json();
+    prog(85);
+    loadFromPA(data);
+    prog(100);
+  } catch(err) {
+    console.warn('PA auto-load failed:', err.message);
+    const cached = getCache();
+    if (cached) {
+      restoreCache(cached);
+      setSB('ok','Loaded from cache (flow offline)');
+      toast('Using cached data. Error: ' + err.message, 'err');
+    } else {
+      showError(err.message);
+    }
+  }
+}
+
+function loadFromPA(data) {
+  // data = { zd:[{TicketID,Organization,...}], jira:[...], ... }
+  const cache = {};
+  Object.keys(PA_KEY).forEach(sec => {
+    const rows = data[PA_KEY[sec]] || [];
+    // Convert PA object array → flat array of values in column order
+    const flat = rows.map(obj => HDRS[sec].map(col => String(obj[col]||'').trim()));
+    cache[sec] = flat;
+    renderSection(sec, flat);
+  });
+  // Handover
+  const ho = (data.handover || [])[0] || {};
+  document.getElementById('ho-out').value = ho.Outgoing  || ho.outgoing  || '';
+  document.getElementById('ho-in').value  = ho.Incoming  || ho.incoming  || '';
+  const prev = ho.PreviousHandover || ho.previousHandover || '';
+  if (prev) { document.getElementById('phom').textContent = ho.Date||ho.date||''; document.getElementById('phob').textContent = prev; }
+  cache.handover = data.handover || [];
+
+  saveCache(cache);
+  refreshDash();
+  setSB('ok','Loaded · '+fmtTime());
+  toast('Data loaded from SharePoint via Power Automate','ok');
+  document.getElementById('btnReload').disabled = false;
+  document.getElementById('btnSave').disabled   = false;
+  sw('dashboard', document.querySelector('.nitem'));
+}
+
+/* ══════════════════════════════════════════
+   SAVE — Power Automate WRITE flow (if set)
+   Falls back to Excel file download if not
+══════════════════════════════════════════ */
+async function exportExcel() {
+  if (PA_WRITE) {
+    // Two-way sync via Power Automate
+    setSB('busy','Saving to SharePoint…');
+    let ok = true;
+    const sections = Object.keys(PA_KEY);
+    for (const sec of sections) {
+      try {
+        const rows = extractRows(TBODY[sec], HDRS[sec]);
+        await fetch(PA_WRITE, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ section: PA_KEY[sec], rows })
+        });
+      } catch(e) { ok = false; toast('Save failed for '+sec+': '+e.message,'err'); }
+    }
+    if (ok) { setSB('ok','Saved to SharePoint · '+fmtTime()); toast('All sections saved to SharePoint Excel','ok'); }
+  } else {
+    // Fallback: download Excel file
+    buildAndDownloadExcel();
+  }
+}
+
+function buildAndDownloadExcel() {
+  try {
+    const wb = XLSX.utils.book_new();
+    Object.keys(SHEETS).forEach(sec => {
+      const rows = [HDRS[sec], ...extractRows(TBODY[sec], HDRS[sec].length)];
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = HDRS[sec].map((_,i)=>({wch:i===2?55:i===1?22:16}));
+      XLSX.utils.book_append_sheet(wb, ws, SHEETS[sec]);
+    });
+    const hRows = [['Outgoing','Incoming','PreviousHandover','Date'],
+      [document.getElementById('ho-out').value, document.getElementById('ho-in').value,'',new Date().toLocaleDateString('en-GB')]];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(hRows),'Handover');
+    XLSX.writeFile(wb, `CloudOps_Shift_Board_${new Date().toISOString().slice(0,10)}.xlsx`);
+    setSB('ok','Downloaded · '+fmtTime());
+    toast('Excel downloaded. Upload it to SharePoint to update the shared file.','ok');
+  } catch(e) { toast('Export failed: '+e.message,'err'); }
+}
+
+function extractRows(tbodyId, cols) {
+  const rows = [];
+  document.getElementById(tbodyId)?.querySelectorAll('tr').forEach(tr => {
+    if (tr.cells.length <= 1) return;
+    const obj = {}; let hasData = false;
+    tr.querySelectorAll('td').forEach((td,i) => {
+      if (i >= cols.length) return;
+      const sel = td.querySelector('select'); const a = td.querySelector('a.tl');
+      const val = sel ? sel.value : (a && i===0 ? a.textContent.replace(/^#/,'') : td.innerText.trim());
+      obj[cols[i]] = val; if (val) hasData = true;
+    });
+    if (hasData) rows.push(obj);
+  });
+  return rows;
+}
+
+/* ══════════════════════════════════════════
+   FILE IMPORT (manual fallback)
+══════════════════════════════════════════ */
+function importFile(e) {
+  const f = e.target.files[0]; if (!f) return;
+  setSB('busy','Reading '+f.name+'…');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(ev.target.result,{type:'array'});
+      const cache = {};
+      Object.entries(SHEETS).forEach(([sec,sname]) => {
+        const ws = wb.Sheets[sname]; if (!ws) return;
+        const raw = XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        const data = raw.slice(2).filter(r=>r.some(c=>String(c).trim()));
+        cache[sec] = data; renderSection(sec,data);
+      });
+      const hws = wb.Sheets['Handover'];
+      if (hws) {
+        const raw = XLSX.utils.sheet_to_json(hws,{header:1,defval:''});
+        if (raw.length>=3) {
+          const r=raw[2]; document.getElementById('ho-out').value=r[0]||''; document.getElementById('ho-in').value=r[1]||'';
+          if(r[2]){document.getElementById('phom').textContent=r[3]||'';document.getElementById('phob').textContent=r[2];}
+        }
+        cache.handover = raw.slice(2);
+      }
+      saveCache(cache); refreshDash(); setSB('ok','Loaded from '+f.name);
+      toast('File loaded','ok');
+      document.getElementById('btnReload').disabled = false;
+      document.getElementById('btnSave').disabled = false;
+      sw('dashboard',document.querySelector('.nitem'));
+    } catch(err){setSB('err','Read failed');toast('Could not read: '+err.message,'err');}
+    e.target.value='';
+  };
+  reader.readAsArrayBuffer(f);
+}
+
+/* ══════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════ */
+function renderSection(sec, rows) {
+  const tbody = document.getElementById(TBODY[sec]); if (!tbody) return;
+  tbody.innerHTML = '';
+  const c = document.getElementById(CNT[sec]); if (c) c.textContent = rows.length;
+  if (!rows.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--tm)">No data</td></tr>`;return;}
+  rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=buildRow(sec,r.map(c=>String(c||'').trim()));tbody.appendChild(tr);});
+}
+
+function buildRow(sec,r){
+  const g=i=>r[i]||'';
+  if(sec==='zendesk'){const n=g(0).replace('#','');const url=n.startsWith('http')?n:`https://digitalai.zendesk.com/agent/tickets/${n}`;return `<td><a href="${url}" target="_blank" class="tl">#${n}</a></td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td>${bh(g(3))}</td><td contenteditable${g(4).toLowerCase()==='urgent'?' style="color:#a32d2d;font-weight:600"':''}>${x(g(4))}</td>`;}
+  if(sec==='jira'){const n=g(0);const url=n.startsWith('http')?n:`https://experitest.atlassian.net/browse/${n}`;return `<td><a href="${url}" target="_blank" class="tl">${x(n)}</a></td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td>${bh(g(3))}</td><td contenteditable${g(4)==='Update RnD'?' style="color:#854f0b;font-weight:600"':''}>${x(g(4))}</td>`;}
+  if(sec==='limited'){const n=g(0).replace('#','');const url=`https://digitalai.zendesk.com/agent/tickets/${n}`;return `<td><a href="${url}" target="_blank" class="tl">#${n}</a></td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td><select class="ssel">${so(['Resolved','In progress','Done'],g(3))}</select></td><td>${g(4).toLowerCase().includes('rca')?'<span class="rca">Send RCA</span>':`<span contenteditable>${x(g(4))}</span>`}</td>`;}
+  if(sec==='provisioning'){const n=g(0).replace('#','');const url=`https://digitalai.zendesk.com/agent/tickets/${n}`;return `<td><a href="${url}" target="_blank" class="tl">#${n||'—'}</a></td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td><select class="ssel">${so(['In progress','Done','Resolved'],g(3))}</select></td><td contenteditable>${x(g(4))}</td>`;}
+  if(sec==='info') return `<td>${x(g(0))}</td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td><select class="ssel">${so(['Need-to-do','In progress','Done','Monitor','HOLD'],g(3))}</select></td><td contenteditable>${x(g(4))}</td>`;
+  if(sec==='project') return `<td>${x(g(0))}</td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td><select class="ssel">${so(['In progress','Done','Need to do'],g(3))}</select></td><td contenteditable>${x(g(4))}</td>`;
+  if(sec==='remote'){const n=g(0).replace('#','');const url=`https://digitalai.zendesk.com/agent/tickets/${n}`;return `<td><a href="${url}" target="_blank" class="tl">#${n||'—'}</a></td><td contenteditable>${x(g(1))}</td><td contenteditable>${x(g(2))}</td><td>${bh(g(3))}</td><td contenteditable>${x(g(4))}</td>`;}
+  return r.map(c=>`<td contenteditable>${x(c)}</td>`).join('');
+}
+const so=(list,cur)=>{const s=new Set([cur,...list].filter(Boolean));return [...s].map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('');};
+const x=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ══════════════════════════════════════════
+   CACHE
+══════════════════════════════════════════ */
+const saveCache = d=>{try{localStorage.setItem(K_CACHE,JSON.stringify(d));}catch(e){}};
+const getCache  = ()=>{try{const d=localStorage.getItem(K_CACHE);return d?JSON.parse(d):null;}catch(e){return null;}};
+function restoreCache(cache){
+  Object.keys(cache).forEach(sec=>{
+    if(sec==='handover'){const rows=cache.handover||[];if(rows.length){const r=rows[0];document.getElementById('ho-out').value=r.Outgoing||r[0]||'';document.getElementById('ho-in').value=r.Incoming||r[1]||'';if(r.PreviousHandover||r[2]){document.getElementById('phom').textContent=r.Date||r[3]||'';document.getElementById('phob').textContent=r.PreviousHandover||r[2];}}}
+    else renderSection(sec,cache[sec]||[]);
+  });
+  refreshDash();document.getElementById('btnReload').disabled=false;document.getElementById('btnSave').disabled=false;
+  sw('dashboard',document.querySelector('.nitem'));
+}
+
+/* ══════════════════════════════════════════
+   MODAL / SETUP
+══════════════════════════════════════════ */
+function openModal(){document.getElementById('cfg-read').value=PA_READ||'';document.getElementById('cfg-write').value=PA_WRITE||'';document.getElementById('setupModal').classList.add('open');}
+function closeModal(){document.getElementById('setupModal').classList.remove('open');}
+function stab(id,btn){document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active');}
+function saveSetup(){
+  const r=document.getElementById('cfg-read').value.trim();
+  const w=document.getElementById('cfg-write').value.trim();
+  if(!r){toast('Please enter at least the READ flow URL','err');return;}
+  PA_READ=r;PA_WRITE=w;
+  localStorage.setItem(K_READ,r);if(w)localStorage.setItem(K_WRITE,w);
+  closeModal();autoLoad();
+}
+
+/* ══════════════════════════════════════════
+   ADD ROW HELPERS
+══════════════════════════════════════════ */
+const bh=st=>{const m={'Done':'b-done','In progress':'b-prog','On hold':'b-hold','Need to do':'b-need','Need-to-do':'b-need','Notice':'b-not','Resolved':'b-res','Monitor':'b-mon'};return `<span class="badge ${m[st]||'b-not'}">${st}</span>`;};
+const vv=id=>document.getElementById(id)?.value.trim()||'';
+const ap=(id,html)=>{const tr=document.createElement('tr');tr.innerHTML=html;document.getElementById(id).appendChild(tr);};
+const cl=ids=>ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+const ic=id=>{const el=document.getElementById(id);if(el)el.textContent=parseInt(el.textContent||0)+1;};
+function addZD(){const n=vv('ai-zn'),c=vv('ai-zc'),s=vv('ai-zs'),st=vv('ai-zst'),nt=vv('ai-znt');if(!s&&!n)return;const num=n.replace(/\D/g,'')||n;const url=n.startsWith('http')?n:`https://digitalai.zendesk.com/agent/tickets/${num}`;ap('zd-body',`<td><a href="${url}" target="_blank" class="tl">#${num}</a></td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(s)}</td><td>${bh(st)}</td><td contenteditable${nt.toLowerCase()==='urgent'?' style="color:#a32d2d;font-weight:600"':''}>${x(nt)}</td>`);cl(['ai-zn','ai-zc','ai-zs','ai-znt']);ic('nc-zd');}
+function addJira(){const n=vv('ai-jn'),c=vv('ai-jc'),d=vv('ai-jd');if(!n&&!d)return;const url=n.startsWith('http')?n:`https://experitest.atlassian.net/browse/${n}`;ap('jira-body',`<td><a href="${url}" target="_blank" class="tl">${x(n)||'—'}</a></td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(d)}</td><td>${bh('In progress')}</td><td contenteditable>Customer issue</td>`);cl(['ai-jn','ai-jc','ai-jd']);ic('nc-jira');}
+function addLtd(){const n=vv('ai-ln'),c=vv('ai-lc'),d=vv('ai-ld'),st=vv('ai-ls');if(!d)return;const num=n.replace(/\D/g,'')||n;const url=`https://digitalai.zendesk.com/agent/tickets/${num}`;ap('ltd-body',`<td><a href="${url}" target="_blank" class="tl">#${num||'—'}</a></td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(d)}</td><td><select class="ssel">${so(['In progress','Resolved','Done'],st)}</select></td><td></td>`);cl(['ai-ln','ai-lc','ai-ld']);ic('nc-ltd');}
+function addProv(){const n=vv('ai-pn'),c=vv('ai-pc'),d=vv('ai-pd');if(!d)return;const num=n.replace(/\D/g,'')||n;const url=`https://digitalai.zendesk.com/agent/tickets/${num}`;ap('prov-body',`<td><a href="${url}" target="_blank" class="tl">#${num||'—'}</a></td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(d)}</td><td><select class="ssel">${so(['In progress','Done','Resolved'],'In progress')}</select></td><td contenteditable></td>`);cl(['ai-pn','ai-pc','ai-pd']);ic('nc-prov');}
+function addInfo(){const c=vv('ai-ic'),t=vv('ai-it'),st=vv('ai-is');if(!t)return;const n=document.getElementById('info-body').querySelectorAll('tr').length+1;ap('info-body',`<td>${n}</td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(t)}</td><td><select class="ssel">${so(['Need-to-do','In progress','Done','Monitor','HOLD'],st)}</select></td><td contenteditable></td>`);cl(['ai-ic','ai-it']);ic('nc-info');}
+function addBloat(){const c=vv('ai-bc'),d=vv('ai-bd');if(!d)return;const n=document.getElementById('bloat-body').querySelectorAll('tr').length+1;ap('bloat-body',`<td>${n}</td><td contenteditable>${x(c)||'—'}</td><td contenteditable style="color:#854f0b;font-weight:600">${x(d)}</td><td><select class="ssel">${so(['Need-to-do','Done'],'Need-to-do')}</select></td>`);cl(['ai-bc','ai-bd']);}
+function addRH(){const n=vv('ai-rn'),c=vv('ai-rc'),d=vv('ai-rd'),st=vv('ai-rs');if(!d)return;const num=n.replace(/\D/g,'')||n;const url=`https://digitalai.zendesk.com/agent/tickets/${num}`;ap('rh-body',`<td><a href="${url}" target="_blank" class="tl">#${num||'—'}</a></td><td contenteditable>${x(c)||'—'}</td><td contenteditable>${x(d)}</td><td>${bh(st)}</td><td contenteditable></td>`);cl(['ai-rn','ai-rc','ai-rd']);ic('nc-rh');}
+
+/* ══════════════════════════════════════════
+   DASHBOARD CHARTS
+══════════════════════════════════════════ */
+let dc1=null,dc2=null,dc3=null,dc4=null;
+function refreshDash(){
+  const zd=[...document.querySelectorAll('#zd-body tr')].filter(r=>r.cells.length>2);
+  const jr=[...document.querySelectorAll('#jira-body tr')].filter(r=>r.cells.length>2);
+  const lt=[...document.querySelectorAll('#ltd-body tr')].filter(r=>r.cells.length>2);
+  const pv=[...document.querySelectorAll('#prov-body tr')].filter(r=>r.cells.length>2);
+  let dn=0,pr=0;zd.forEach(r=>{const s=r.cells[3]?.querySelector('.badge')?.textContent||'';if(s==='Done')dn++;if(s==='In progress')pr++;});
+  const rca=lt.filter(r=>(r.cells[4]?.textContent||'').includes('RCA')).length;
+  const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  sv('kv-zd',zd.length);sv('kv-prog',pr);sv('kv-done',dn);sv('kv-jira',jr.length);sv('kv-rca',rca);sv('kv-prov',pv.length);
+  const attn=document.getElementById('attn-body');attn.innerHTML='';
+  zd.forEach(r=>{const st=r.cells[3]?.querySelector('.badge')?.textContent||'';const nt=(r.cells[4]?.innerText||'').trim();
+    if(st==='In progress'||st==='Need to do'||nt.toLowerCase().includes('rca')||nt.toLowerCase()==='urgent'){const tr=document.createElement('tr');tr.innerHTML=`<td>${r.cells[0]?.innerHTML||''}</td><td>${r.cells[1]?.innerText||''}</td><td>${r.cells[2]?.innerText||''}</td><td>${bh(st)}</td><td>${nt.toLowerCase()==='urgent'?'<span style="color:#a32d2d;font-weight:600">Urgent</span>':nt.includes('RCA')?'<span class="rca">Send RCA</span>':nt}</td>`;attn.appendChild(tr);}
+  });
+  if(!attn.children.length)attn.innerHTML='<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--tm)">No attention items</td></tr>';
+  const dk=matchMedia('(prefers-color-scheme:dark)').matches;
+  const gc=dk?'#2c2c2a':'#e1e0d9',tc=dk?'#fff':'#0b0b0b',mc='#898781',bg=dk?'#232321':'#fff';
+  const dC=['#1baf7a','#2a78d6','#eda100','#73726c','#e34948','#534ab7'];
+  const stC={};zd.forEach(r=>{const s=r.cells[3]?.querySelector('.badge')?.textContent||'?';stC[s]=(stC[s]||0)+1;});
+  const sL=Object.keys(stC),sD=Object.values(stC);
+  const l1=document.getElementById('leg1');l1.innerHTML='';
+  sL.forEach((l,i)=>{l1.innerHTML+=`<span class="li"><span class="lsq" style="background:${dC[i%dC.length]}"></span>${l} ${stC[l]}</span>`;});
+  if(dc1)dc1.destroy();dc1=new Chart(document.getElementById('c1'),{type:'doughnut',data:{labels:sL,datasets:[{data:sD,backgroundColor:dC.slice(0,sD.length),borderWidth:2,borderColor:bg}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false}},animation:{animateRotate:true,duration:800}}});
+  const oC={};zd.forEach(r=>{const o=(r.cells[1]?.innerText||'?').trim();oC[o]=(oC[o]||0)+1;});
+  const oS=Object.entries(oC).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(dc2)dc2.destroy();dc2=new Chart(document.getElementById('c2'),{type:'bar',data:{labels:oS.map(x=>x[0]),datasets:[{data:oS.map(x=>x[1]),backgroundColor:'#2a78d6',borderRadius:4,barThickness:13}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:mc,font:{size:10}},beginAtZero:true},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}},animation:{duration:800}}});
+  const jC={};jr.forEach(r=>{const c=(r.cells[1]?.innerText||'?').trim();jC[c]=(jC[c]||0)+1;});const jS=Object.entries(jC).sort((a,b)=>b[1]-a[1]);
+  if(dc3)dc3.destroy();dc3=new Chart(document.getElementById('c3'),{type:'bar',data:{labels:jS.map(x=>x[0]),datasets:[{data:jS.map(x=>x[1]),backgroundColor:'#e34948',borderRadius:4,barThickness:13}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:mc,font:{size:10}},beginAtZero:true},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}},animation:{duration:800}}});
+  if(dc4)dc4.destroy();dc4=new Chart(document.getElementById('c4'),{type:'doughnut',data:{labels:['In progress'],datasets:[{data:[pv.length||1],backgroundColor:['#2a78d6'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}},animation:{animateRotate:true,duration:700}}});
+}
+
+/* ══════════════════════════════════════════
+   LOAD SCREEN HELPERS
+══════════════════════════════════════════ */
+function showNoSetup(){
+  setLd('Connect to your Excel file','Use Power Automate (included in Microsoft 365) to auto-load. Takes 10 minutes to set up once.');
+  document.getElementById('loadIcon').textContent='📋';document.getElementById('loadIcon').classList.remove('pulsing');
+  document.getElementById('loadWrap').innerHTML+=`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn btn-blue" onclick="openModal()" style="font-size:12px;padding:7px 14px"><i class="ti ti-settings" style="font-size:14px"></i> Open Setup</button><button class="btn" onclick="document.getElementById('fileInp').click()" style="font-size:12px;padding:7px 14px"><i class="ti ti-file-import" style="font-size:14px"></i> Load Excel file</button></div>`;
+  setSB('idle','Not connected — click Setup');
+}
+function showError(msg){
+  setLd('Could not load data',msg);
+  document.getElementById('loadIcon').textContent='⚠️';document.getElementById('loadIcon').classList.remove('pulsing');
+  document.getElementById('loadWrap').innerHTML+=`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn btn-blue" onclick="openModal()" style="font-size:12px;padding:7px 14px"><i class="ti ti-settings" style="font-size:14px"></i> Setup</button><button class="btn" onclick="document.getElementById('fileInp').click()" style="font-size:12px;padding:7px 14px"><i class="ti ti-file-import" style="font-size:14px"></i> Load Excel file</button></div>`;
+  setSB('err','Load failed — click Setup');
+}
+
+/* ══════════════════════════════════════════
+   NAV + UTILS
+══════════════════════════════════════════ */
+function sw(name,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));document.getElementById('view-'+name).classList.add('active');if(el)el.classList.add('active');if(name==='dashboard')refreshDash();}
+function filt(inp,id){const q=inp.value.toLowerCase();document.getElementById(id).querySelectorAll('tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});}
+function filtSt(sel,id){const v=sel.value.toLowerCase();document.getElementById(id).querySelectorAll('tbody tr').forEach(r=>{if(!v){r.style.display='';return;}const b=r.querySelector('.badge');r.style.display=(b&&b.textContent.toLowerCase().includes(v))?'':'none';});}
+function setSB(state,txt){const b=document.getElementById('sbadge'),t=document.getElementById('stxt');b.className='sbadge'+(state==='ok'?' ok':state==='busy'?' busy':state==='err'?' err':'');b.querySelector('.sdot').className='sdot'+(state==='busy'?' spin':'');t.textContent=txt;}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',5000);}
+function fmtTime(){return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+function prog(n){const el=document.getElementById('progFill');if(el)el.style.width=n+'%';}
+function setLd(t,s){document.getElementById('loadTitle').textContent=t;document.getElementById('loadSub').textContent=s;}
+</script>
+</body>
+</html>
